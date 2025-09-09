@@ -1,0 +1,28 @@
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: apps/dashboard/Dockerfile
+    container_name: launchpad-dashboard
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - GENERATED_DIR=/app/.generated       # <— içeride kullanacağımız yol
+    volumes:
+      - ./generated:/app/.generated         # <— host:/opt/launch-pad/generated
+
+  caddy:
+    image: caddy:2
+    container_name: launchpad-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:

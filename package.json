@@ -1,0 +1,2 @@
+{ "name":"launch-pad","private":true,"packageManager":"pnpm@9.6.0",
+  "scripts":{"dev":"pnpm --filter dashboard dev","build":"pnpm --filter dashboard build","start":"pnpm --filter dashboard start"} }

@@ -1,0 +1,3 @@
+launchpad.snappost.app {
+  reverse_proxy dashboard:3000
+}
