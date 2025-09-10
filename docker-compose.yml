@@ -1,15 +1,23 @@
 services:
+  services:
   dashboard:
+    container_name: launchpad-dashboard
     build:
       context: .
       dockerfile: apps/dashboard/Dockerfile
-    container_name: launchpad-dashboard
-    restart: unless-stopped
+    env_file:
+      - .env
     environment:
       - NODE_ENV=production
-      - GENERATED_DIR=/app/.generated       # <— içeride kullanacağımız yol
+      - GENERATED_DIR=/app/.generated
     volumes:
-      - ./generated:/app/.generated         # <— host:/opt/launch-pad/generated
+      # Bu bir bind mount → root volumes’a eklemek GEREKMEZ
+      - /opt/launch-pad/generated:/app/.generated
+    expose:
+      - "3000"
+    restart: unless-stopped
+    depends_on:
+      - postgres
 
   caddy:
     image: caddy:2
@@ -23,6 +31,21 @@ services:
       - caddy_data:/data
       - caddy_config:/config
 
+  postgres:
+    image: postgres:16-alpine
+    container_name: launchpad-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: launchpad
+      POSTGRES_PASSWORD: launchpad_pw
+      POSTGRES_DB: launchpad
+    volumes:
+      # Bu named volume → root’ta zaten var: pgdata:
+      - pgdata:/var/lib/postgresql/data
+    expose:
+      - "5432"
+
 volumes:
   caddy_data:
   caddy_config:
+  pgdata:
